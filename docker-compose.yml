@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/:/tmp
+    environment:
+      DATABASE_HOST: model2.postgres.database.azure.com
+      POSTGRES_USER: model2@model2
+      POSTGRES_PASSWORD: M0d3l4m13nt0
+      POSTGRES_DB: modelo_base
+
+  pg_admin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "80:80"
+    volumes:
+      - .data/:/tmp
+    depends_on:
+      - postgres
+      
+  app:
+    build: .
+    depends_on:
+      - pg_admin
+      - postgres
+    volumes:
+      - .:/usr/src/app
+    restart: on-failure
